@@ -1,5 +1,13 @@
 <template>
   <div>
+    <h3>Tasks Due Soon</h3>
+    <div v-if="dueSoonTasks.length === 0">No upcoming tasks.</div>
+    <ul v-else>
+      <li v-for="task in dueSoonTasks" :key="task.id" class="due-task">
+        {{ task.name }} - Due: {{ task.dueDate }}
+      </li>
+    </ul>
+
     <h3>Task List</h3>
     <TaskForm />
     <div>
@@ -43,6 +51,7 @@ export default defineComponent({
       filter.value = newFilter;
     };
 
+    // Filter tasks based on the selected filter
     const filteredTasks = computed(() => {
       return store.state.tasks.filter((task: { completed: boolean }) => {
         if (filter.value === "completed") return task.completed;
@@ -51,7 +60,21 @@ export default defineComponent({
       });
     });
 
-    return { filteredTasks, setFilter, filter };
+    // Compute tasks due within the next day
+    const dueSoonTasks = computed(() => {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      return store.state.tasks.filter(
+        (task: { dueDate: string; completed: boolean }) => {
+          const dueDate = new Date(task.dueDate);
+          return dueDate >= today && dueDate <= tomorrow && !task.completed;
+        }
+      );
+    });
+
+    return { filteredTasks, dueSoonTasks, setFilter, filter };
   },
 });
 </script>
@@ -64,5 +87,11 @@ button {
 button.active {
   background-color: blue;
   color: white;
+}
+.due-task {
+  color: red;
+  font-weight: bold;
+  list-style: none;
+  margin-bottom: 5px;
 }
 </style>

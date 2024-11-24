@@ -12,6 +12,7 @@
         <option value="Medium">Medium</option>
         <option value="Low">Low</option>
       </select>
+      <input v-model="taskDueDate" type="date" class="date-input" />
       <button type="submit" class="btn-add">Add Task</button>
     </form>
   </div>
@@ -26,35 +27,31 @@ export default defineComponent({
   setup() {
     const taskName = ref("");
     const taskPriority = ref("");
+    const taskDueDate = ref("");
 
     const store = useStore();
 
     const submitTask = () => {
-      if (taskName.value.trim() && taskPriority.value) {
+      if (taskName.value.trim() && taskPriority.value && taskDueDate.value) {
         store.dispatch("addTask", {
           name: taskName.value,
           priority: taskPriority.value,
+          dueDate: taskDueDate.value,
         });
         taskName.value = "";
         taskPriority.value = "";
+        taskDueDate.value = "";
       }
     };
 
-    return { taskName, taskPriority, submitTask };
+    return { taskName, taskPriority, taskDueDate, submitTask };
   },
 });
 </script>
 
 <style scoped>
-.task-input {
-  padding: 0.5rem;
+.date-input {
   margin-right: 0.5rem;
-}
-.priority-select {
-  margin-right: 0.5rem;
-  padding: 0.5rem;
-}
-.btn-add {
   padding: 0.5rem;
 }
 </style>

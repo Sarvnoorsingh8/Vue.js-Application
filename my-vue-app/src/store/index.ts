@@ -4,6 +4,7 @@ interface Task {
   id?: number;
   name: string;
   priority: string;
+  dueDate: string;
   completed: boolean;
 }
 
@@ -20,9 +21,10 @@ export default createStore<State>({
       state.tasks.push({
         ...task,
         id: Date.now(),
-        completed: false,
+        completed: task.completed ?? false,
       });
     },
+
     REMOVE_TASK(state, id: number) {
       state.tasks = state.tasks.filter((task) => task.id !== id);
     },
