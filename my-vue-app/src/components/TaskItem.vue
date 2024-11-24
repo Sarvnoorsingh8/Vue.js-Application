@@ -1,27 +1,10 @@
 <template>
-  <div
-    class="task-item flex justify-between items-center mb-2 p-4 border rounded bg-gray-100"
-  >
-    <p
-      class="text-sm"
-      :class="{
-        'text-green-600': task.completed,
-        'text-red-600': !task.completed,
-      }"
-    >
-      {{ task.name }}
+  <div>
+    <p>
+      <input type="checkbox" :checked="task.completed" @change="toggleTask" />
+      {{ task.name }} - Priority: {{ task.priority }}
     </p>
-    <div>
-      <button
-        @click="toggleTask"
-        class="mr-2 text-blue-500 border px-2 py-1 rounded"
-      >
-        Toggle
-      </button>
-      <button @click="removeTask" class="text-red-500 border px-2 py-1 rounded">
-        Remove
-      </button>
-    </div>
+    <button @click="removeTask">Remove</button>
   </div>
 </template>
 
@@ -40,15 +23,22 @@ export default defineComponent({
   setup(props) {
     const store = useStore();
 
-    const removeTask = () => {
-      store.dispatch("removeTask", props.task.id);
-    };
-
     const toggleTask = () => {
       store.dispatch("toggleTask", props.task.id);
     };
 
-    return { removeTask, toggleTask };
+    const removeTask = () => {
+      store.dispatch("removeTask", props.task.id);
+    };
+
+    return { toggleTask, removeTask };
   },
 });
 </script>
+
+<style scoped>
+button {
+  margin-left: 10px;
+  color: red;
+}
+</style>

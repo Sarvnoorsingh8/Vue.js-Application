@@ -1,26 +1,20 @@
 <template>
   <div>
-    <h3 class="text-xl mb-4">Task List</h3>
+    <h3>Task List</h3>
     <TaskForm />
-    <div class="mb-4">
-      <button
-        @click="setFilter('all')"
-        class="p-2"
-        :class="{ 'bg-blue-500 text-white': filter === 'all' }"
-      >
+    <div>
+      <button @click="setFilter('all')" :class="{ active: filter === 'all' }">
         All
       </button>
       <button
         @click="setFilter('completed')"
-        class="p-2"
-        :class="{ 'bg-blue-500 text-white': filter === 'completed' }"
+        :class="{ active: filter === 'completed' }"
       >
         Completed
       </button>
       <button
         @click="setFilter('pending')"
-        class="p-2"
-        :class="{ 'bg-blue-500 text-white': filter === 'pending' }"
+        :class="{ active: filter === 'pending' }"
       >
         Pending
       </button>
@@ -33,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { useStore } from "vuex";
 import TaskForm from "./TaskForm.vue";
 import TaskItem from "./TaskItem.vue";
@@ -45,33 +39,30 @@ export default defineComponent({
     const store = useStore();
     const filter = ref("all");
 
-    const tasks = computed(() => store.state.tasks);
-
-    const filteredTasks = computed(() => {
-      if (filter.value === "completed") {
-        return tasks.value.filter(
-          (task: { completed: boolean }) => task.completed
-        );
-      }
-      if (filter.value === "pending") {
-        return tasks.value.filter(
-          (task: { completed: boolean }) => !task.completed
-        );
-      }
-      return tasks.value;
-    });
-
     const setFilter = (newFilter: string) => {
       filter.value = newFilter;
     };
 
-    return { tasks, filteredTasks, filter, setFilter };
+    const filteredTasks = computed(() => {
+      return store.state.tasks.filter((task: { completed: boolean }) => {
+        if (filter.value === "completed") return task.completed;
+        if (filter.value === "pending") return !task.completed;
+        return true;
+      });
+    });
+
+    return { filteredTasks, setFilter, filter };
   },
 });
 </script>
 
 <style scoped>
 button {
-  margin-right: 0.5rem;
+  margin: 5px;
+  padding: 5px 10px;
+}
+button.active {
+  background-color: blue;
+  color: white;
 }
 </style>

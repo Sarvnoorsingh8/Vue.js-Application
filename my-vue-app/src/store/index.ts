@@ -1,8 +1,9 @@
 import { createStore } from "vuex";
 
 interface Task {
-  id: number;
+  id?: number;
   name: string;
+  priority: string;
   completed: boolean;
 }
 
@@ -19,7 +20,7 @@ export default createStore<State>({
       state.tasks.push({
         ...task,
         id: Date.now(),
-        completed: task.completed ?? false,
+        completed: false,
       });
     },
     REMOVE_TASK(state, id: number) {

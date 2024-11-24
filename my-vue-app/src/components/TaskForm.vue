@@ -1,17 +1,18 @@
 <template>
   <div>
-    <form @submit.prevent="submitTask" class="mb-4">
+    <form @submit.prevent="submitTask">
       <input
         v-model="taskName"
         placeholder="Enter task name"
-        class="task-input border rounded p-2 mr-2"
+        class="task-input"
       />
-      <button
-        type="submit"
-        class="btn-add bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Add Task
-      </button>
+      <select v-model="taskPriority" class="priority-select">
+        <option disabled value="">Select Priority</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      <button type="submit" class="btn-add">Add Task</button>
     </form>
   </div>
 </template>
@@ -24,16 +25,22 @@ export default defineComponent({
   name: "TaskForm",
   setup() {
     const taskName = ref("");
+    const taskPriority = ref("");
+
     const store = useStore();
 
     const submitTask = () => {
-      if (taskName.value.trim() !== "") {
-        store.dispatch("addTask", { name: taskName.value });
+      if (taskName.value.trim() && taskPriority.value) {
+        store.dispatch("addTask", {
+          name: taskName.value,
+          priority: taskPriority.value,
+        });
         taskName.value = "";
+        taskPriority.value = "";
       }
     };
 
-    return { taskName, submitTask };
+    return { taskName, taskPriority, submitTask };
   },
 });
 </script>
@@ -42,6 +49,10 @@ export default defineComponent({
 .task-input {
   padding: 0.5rem;
   margin-right: 0.5rem;
+}
+.priority-select {
+  margin-right: 0.5rem;
+  padding: 0.5rem;
 }
 .btn-add {
   padding: 0.5rem;
