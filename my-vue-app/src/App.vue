@@ -3,6 +3,7 @@
     <nav>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
+      <router-link to="/login">Login</router-link>
       <button @click="toggleTheme" class="theme-toggle">
         {{ theme === "light" ? "Dark Mode" : "Light Mode" }}
       </button>

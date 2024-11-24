@@ -1,7 +1,7 @@
 import { createStore } from "vuex";
 
 interface Task {
-  id?: number;
+  id: number;
   name: string;
   priority: string;
   dueDate: string;
@@ -25,7 +25,6 @@ export default createStore<State>({
         completed: task.completed ?? false,
       });
     },
-
     REMOVE_TASK(state, id: number) {
       state.tasks = state.tasks.filter((task) => task.id !== id);
     },
@@ -34,6 +33,15 @@ export default createStore<State>({
       if (task) {
         task.completed = !task.completed;
       }
+    },
+    EDIT_TASK(state, updatedTask: Task) {
+      const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
+      if (index !== -1) {
+        state.tasks.splice(index, 1, updatedTask);
+      }
+    },
+    SET_TASKS(state, tasks: Task[]) {
+      state.tasks = tasks;
     },
   },
   actions: {
@@ -46,5 +54,27 @@ export default createStore<State>({
     toggleTask({ commit }, id: number) {
       commit("TOGGLE_TASK", id);
     },
+    editTask({ commit }, updatedTask: Task) {
+      commit("EDIT_TASK", updatedTask);
+    },
+    fetchTasksByCategory({ commit, state }, category: string) {
+      const filteredTasks = state.tasks.filter(
+        (task) => task.category === category
+      );
+      commit("SET_TASKS", filteredTasks);
+    },
+  },
+  getters: {
+    completedTasks(state): Task[] {
+      return state.tasks.filter((task) => task.completed);
+    },
+    pendingTasks(state): Task[] {
+      return state.tasks.filter((task) => !task.completed);
+    },
+    tasksByCategory:
+      (state) =>
+      (category: string): Task[] => {
+        return state.tasks.filter((task) => task.category === category);
+      },
   },
 });

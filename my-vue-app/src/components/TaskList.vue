@@ -72,15 +72,15 @@ export default defineComponent({
       filter.value = newFilter;
     };
 
-    const uniqueCategories = computed(() => {
+    const uniqueCategories = computed((): string[] => {
       const categories = store.state.tasks.map(
         (task: { category: string }) => task.category
       );
       return Array.from(new Set(categories));
     });
 
-    const filteredTasksByCategory = computed(() => {
-      return store.state.tasks.filter(
+    const filteredTasksByCategory = computed(() =>
+      store.state.tasks.filter(
         (task: { completed: boolean; category: string }) => {
           const matchesCategory =
             selectedCategory.value === "All" ||
@@ -91,21 +91,20 @@ export default defineComponent({
             return !task.completed && matchesCategory;
           return matchesCategory;
         }
-      );
-    });
+      )
+    );
 
-    const groupedTasksByCategory = computed(() => {
-      return filteredTasksByCategory.value.reduce(
+    const groupedTasksByCategory = computed(() =>
+      filteredTasksByCategory.value.reduce(
         (groups: Record<string, any[]>, task: { category: string }) => {
           if (!groups[task.category]) groups[task.category] = [];
           groups[task.category].push(task);
           return groups;
         },
         {}
-      );
-    });
+      )
+    );
 
-    // Progress bar calculation
     const progressPercentage = computed(() => {
       const totalTasks = store.state.tasks.length;
       const completedTasks = store.state.tasks.filter(
