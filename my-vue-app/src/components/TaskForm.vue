@@ -12,7 +12,12 @@
         <option value="Medium">Medium</option>
         <option value="Low">Low</option>
       </select>
-      <input v-model="taskDueDate" type="date" class="date-input" />
+      <select v-model="taskCategory" class="category-select">
+        <option disabled value="">Select Category</option>
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+        <option value="Shopping">Shopping</option>
+      </select>
       <button type="submit" class="btn-add">Add Task</button>
     </form>
   </div>
@@ -27,31 +32,36 @@ export default defineComponent({
   setup() {
     const taskName = ref("");
     const taskPriority = ref("");
-    const taskDueDate = ref("");
+    const taskCategory = ref("");
 
     const store = useStore();
 
     const submitTask = () => {
-      if (taskName.value.trim() && taskPriority.value && taskDueDate.value) {
+      if (taskName.value.trim() && taskPriority.value && taskCategory.value) {
         store.dispatch("addTask", {
           name: taskName.value,
           priority: taskPriority.value,
-          dueDate: taskDueDate.value,
+          category: taskCategory.value,
         });
         taskName.value = "";
         taskPriority.value = "";
-        taskDueDate.value = "";
+        taskCategory.value = "";
       }
     };
 
-    return { taskName, taskPriority, taskDueDate, submitTask };
+    return { taskName, taskPriority, taskCategory, submitTask };
   },
 });
 </script>
 
 <style scoped>
-.date-input {
+.task-input,
+.priority-select,
+.category-select {
+  padding: 0.5rem;
   margin-right: 0.5rem;
+}
+.btn-add {
   padding: 0.5rem;
 }
 </style>

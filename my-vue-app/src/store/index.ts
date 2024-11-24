@@ -6,6 +6,7 @@ interface Task {
   priority: string;
   dueDate: string;
   completed: boolean;
+  category: string;
 }
 
 interface State {
