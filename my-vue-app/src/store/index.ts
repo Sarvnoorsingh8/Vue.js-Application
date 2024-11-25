@@ -25,7 +25,6 @@ export default createStore<State>({
       state.currentUser = username;
     },
     ADD_TASK(state, task: Task) {
-      console.log("Adding task:", task);
       state.tasks.push({
         ...task,
         id: Date.now(),

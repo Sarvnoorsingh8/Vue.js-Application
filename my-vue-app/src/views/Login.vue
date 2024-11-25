@@ -34,10 +34,12 @@ export default defineComponent({
     const password = ref("");
 
     const submitLogin = () => {
-      console.log("Login submitted", {
-        username: username.value,
-        password: password.value,
-      });
+      if (username.value && password.value) {
+        // Add your login handling logic here, such as an API call
+        alert(`Welcome, ${username.value}!`);
+      } else {
+        alert("Please enter both username and password.");
+      }
     };
 
     return { username, password, submitLogin };
