@@ -1,24 +1,31 @@
 import { createStore } from "vuex";
 
-interface Task {
+export interface Task {
   id: number;
   name: string;
   priority: string;
-  dueDate: string;
-  completed: boolean;
   category: string;
+  completed: boolean;
+  dueDate: string;
+  user?: string;
 }
 
 interface State {
   tasks: Task[];
+  currentUser: string | null;
 }
 
 export default createStore<State>({
   state: {
     tasks: [],
+    currentUser: "defaultUser",
   },
   mutations: {
+    SET_USER(state, username: string) {
+      state.currentUser = username;
+    },
     ADD_TASK(state, task: Task) {
+      console.log("Adding task:", task);
       state.tasks.push({
         ...task,
         id: Date.now(),
@@ -34,34 +41,26 @@ export default createStore<State>({
         task.completed = !task.completed;
       }
     },
-    EDIT_TASK(state, updatedTask: Task) {
-      const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
-      if (index !== -1) {
-        state.tasks.splice(index, 1, updatedTask);
-      }
-    },
-    SET_TASKS(state, tasks: Task[]) {
-      state.tasks = tasks;
-    },
   },
   actions: {
-    addTask({ commit }, task: Task) {
-      commit("ADD_TASK", task);
+    setUser({ commit }, username: string) {
+      commit("SET_USER", username);
+    },
+    addTask({ commit, state }, task: Omit<Task, "id" | "user">) {
+      if (state.currentUser) {
+        const newTask: Task = {
+          ...task,
+          id: Date.now(),
+          user: state.currentUser,
+        };
+        commit("ADD_TASK", newTask);
+      }
     },
     removeTask({ commit }, id: number) {
       commit("REMOVE_TASK", id);
     },
     toggleTask({ commit }, id: number) {
       commit("TOGGLE_TASK", id);
-    },
-    editTask({ commit }, updatedTask: Task) {
-      commit("EDIT_TASK", updatedTask);
-    },
-    fetchTasksByCategory({ commit, state }, category: string) {
-      const filteredTasks = state.tasks.filter(
-        (task) => task.category === category
-      );
-      commit("SET_TASKS", filteredTasks);
     },
   },
   getters: {
@@ -71,10 +70,26 @@ export default createStore<State>({
     pendingTasks(state): Task[] {
       return state.tasks.filter((task) => !task.completed);
     },
+    userTasks(state): Task[] {
+      return state.tasks.filter((task) => task.user === state.currentUser);
+    },
     tasksByCategory:
       (state) =>
       (category: string): Task[] => {
         return state.tasks.filter((task) => task.category === category);
       },
+    tasksDueSoon(state): Task[] {
+      const today = new Date();
+      const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+      return state.tasks.filter((task) => {
+        const dueDate = new Date(task.dueDate);
+        return (
+          dueDate >= today &&
+          dueDate <= tomorrow &&
+          task.user === state.currentUser &&
+          !task.completed
+        );
+      });
+    },
   },
 });
